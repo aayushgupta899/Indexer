@@ -69,15 +69,15 @@ public interface Index {
      * Load the index onto memory
      * @param compress Whether the index is compressed or not
      */
-    void load(boolean compress);
+    void load(boolean compress, String[] queryTerms);
 
     /**
      * Returns a query on the index
-     * @param query The space separated string of query terms
+     * @param queryTerms The array containing query terms
      * @param k The number of results to return
      * @return
      */
-    List<Map.Entry<Integer, Double>> retrieveQuery(String query, int k);
+    List<Map.Entry<Integer, Double>> retrieveQuery(String[] queryTerms, int k);
 
 
 }

@@ -8,27 +8,21 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class IndexReader {
 
-    public Map<String, PostingList> readIndex(String lookupFileName, String invertedFileName, boolean isCompressed)
+    public Map<String, PostingList> readIndex(String invertedFileName, Map<String, List<String>> lookupMap, boolean isCompressed)
     {
         Map<String, PostingList> invertedIndex = null;
-        try (RandomAccessFile invertedListReader = new RandomAccessFile(invertedFileName, "rw");
-             BufferedReader lookupReader =  new BufferedReader(new InputStreamReader(new FileInputStream(lookupFileName), StandardCharsets.UTF_8));){
+        try (RandomAccessFile invertedListReader = new RandomAccessFile(invertedFileName, "rw");){
             invertedIndex = new HashMap<>();
-            String currentLine = lookupReader.readLine();
             int count = 0;
-            while(currentLine != null)
+            for(Map.Entry<String, List<String>> entry : lookupMap.entrySet())
             {
-                String[] lookupData = currentLine.split("\\s+");
-                String term = lookupData[0];
-                long offset = Long.parseLong(lookupData[1]);
-                int buffLength = Integer.parseInt(lookupData[2]);
+                String term = entry.getKey();
+                long offset = Long.parseLong(entry.getValue().get(0));
+                int buffLength = Integer.parseInt(entry.getValue().get(1));
                 byte[] buffer = new byte[buffLength];
                 invertedListReader.seek(offset);
                 invertedListReader.read(buffer, 0, buffLength);
@@ -63,10 +57,8 @@ public class IndexReader {
                     }
                 }
                 invertedIndex.put(term, postings);
-                currentLine = lookupReader.readLine();
                 count++;
             }
-            System.out.println("Terms in file:"+count);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -115,5 +107,30 @@ public class IndexReader {
     private int fromByteArray(byte[] bytes) {
         return ByteBuffer.wrap(bytes).getInt();
     }
+
+    public Map<String, List<String>> readLookup(String lookupFileName)
+    {
+        Map<String, List<String>> result = null;
+        try(BufferedReader lookupReader =  new BufferedReader(new InputStreamReader(new FileInputStream(lookupFileName), StandardCharsets.UTF_8));) {
+            result = new HashMap<>();
+            String currentLine = lookupReader.readLine();
+            while(currentLine != null)
+            {
+                String[] lookupData = currentLine.split("\\s+");
+                String term = lookupData[0];
+                List<String> data = new ArrayList<>();
+                data.add(lookupData[1]);
+                data.add(lookupData[2]);
+                data.add(lookupData[3]);
+                data.add(lookupData[4]);
+                result.put(term, data);
+                currentLine = lookupReader.readLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
 
 }

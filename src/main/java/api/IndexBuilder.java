@@ -25,19 +25,23 @@ public class IndexBuilder {
         DOC_LENGTH
     }
 
-    private static final String LOOKUP_FILE_NAME =  "InvertedIndexLookup.txt";
+    private static final String INVERTED_INDEX_FILE_NAME_COMPRESSED = "InvertedListCompressed";
+    private static final String INVERTED_INDEX_FILE_NAME_UNCOMPRESSED = "InvertedList";
+    private static final String LOOKUP_FILE_NAME_COMPRESSED =  "InvertedIndexLookupCompressed.txt";
+    private static final String LOOKUP_FILE_NAME_UNCOMPRESSED =  "InvertedIndexLookupUncompressed.txt";
     private static final String SCENE_ID_MAP_FILE_NAME = "SceneIDMap.txt";
     private static final String PLAY_ID_MAP_FILE_NAME = "PlayIDMap.txt";
     private static final String DOC_LENGTH_MAP_FILE_NAME = "DocLengthMap.txt";
 
     public static void main(String[] args) {
 
-        String filename = args[0];
-        boolean toCompress = Boolean.parseBoolean(args[1]);
+        String filename = "/Users/aayushgupta/Downloads/shakespeare-scenes.json";
+        boolean toCompress = true;
         IndexBuilder indexBuilder = new IndexBuilder();
         indexBuilder.buildIndex(filename);
-        String invertedIndexFileName = toCompress ? "InvertedListCompressed" : "InvertedList";
-        indexBuilder.writeIndexToFile(LOOKUP_FILE_NAME, invertedIndexFileName, toCompress);
+        String invertedIndexFileName = toCompress ? INVERTED_INDEX_FILE_NAME_COMPRESSED : INVERTED_INDEX_FILE_NAME_UNCOMPRESSED;
+        String lookupFileName = toCompress ? LOOKUP_FILE_NAME_COMPRESSED : LOOKUP_FILE_NAME_UNCOMPRESSED;
+        indexBuilder.writeIndexToFile(lookupFileName, invertedIndexFileName, toCompress);
         indexBuilder.writeMapToFile(SCENE_ID_MAP_FILE_NAME, MAP_NAME.SCENE_ID);
         indexBuilder.writeMapToFile(PLAY_ID_MAP_FILE_NAME, MAP_NAME.PLAY_ID);
         indexBuilder.writeMapToFile(DOC_LENGTH_MAP_FILE_NAME, MAP_NAME.DOC_LENGTH);

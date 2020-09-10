@@ -16,12 +16,13 @@ public class QueryGenerator {
 
     public static void main(String[] args) {
         InvertedIndex invertedIndex = new InvertedIndex();
-        invertedIndex.load(true);
+        invertedIndex.load(true, null);
         String filename = "Query_700.txt";
         QueryGenerator queryGenerator = new QueryGenerator();
-        queryGenerator.generateQueryTerms(invertedIndex, filename);
+        queryGenerator.generateQueryTerms(invertedIndex, filename, false);
     }
-    public void generateQueryTerms(InvertedIndex invertedIndex, String filename)
+
+    public void generateQueryTerms(InvertedIndex invertedIndex, String filename, boolean withStats)
     {
         Set<String> vocabulary = invertedIndex.getVocabulary();
         List<String> vocabList = new ArrayList<>(vocabulary);
@@ -33,9 +34,14 @@ public class QueryGenerator {
             {
                 int randomInt = new Random().nextInt(vocabList.size());
                 String term = vocabList.get(randomInt);
-                int termFreq = invertedIndex.getTermFrequency(term);
-                int docFreq = invertedIndex.getDocFrequency(term);
-                sb.append(term+" "+termFreq+" "+docFreq);
+                if(withStats){
+                    int termFreq = invertedIndex.getTermFrequency(term);
+                    int docFreq = invertedIndex.getDocFrequency(term);
+                    sb.append(term+" "+termFreq+" "+docFreq);
+                }
+                else{
+                    sb.append(term+" ");
+                }
                 if(j < 6) {
                     sb.append(" ");
                 }

@@ -1,21 +1,22 @@
 package index;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import utilities.Compressor;
 import utilities.IndexReader;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class InvertedIndex implements Index {
 
     private Map<String, PostingList> index;
+    private Map<String, List<String>> lookupMap;
     private Map<Integer, String> sceneIDMap;
     private Map<Integer, String> playIDMap;
     private Map<Integer, Integer> docLengthMap;
 
-    private static final String LOOKUP_FILE_NAME =  "InvertedIndexLookup.txt";
+    private static final String INVERTED_INDEX_FILE_NAME_COMPRESSED = "InvertedListCompressed";
+    private static final String INVERTED_INDEX_FILE_NAME_UNCOMPRESSED = "InvertedList";
+    private static final String LOOKUP_FILE_NAME_COMPRESSED =  "InvertedIndexLookupCompressed.txt";
+    private static final String LOOKUP_FILE_NAME_UNCOMPRESSED =  "InvertedIndexLookupUncompressed.txt";
     private static final String SCENE_ID_MAP_FILE_NAME = "SceneIDMap.txt";
     private static final String PLAY_ID_MAP_FILE_NAME = "PlayIDMap.txt";
     private static final String DOC_LENGTH_MAP_FILE_NAME = "DocLengthMap.txt";
@@ -32,12 +33,17 @@ public class InvertedIndex implements Index {
         return docLengthMap;
     }
 
+    public Map<String, List<String>> getLookupMap() {
+        return lookupMap;
+    }
+
     public InvertedIndex() {
 
         this.index = new HashMap<>();
         this.sceneIDMap = new HashMap<>();
         this.playIDMap = new HashMap<>();
         this.docLengthMap = new HashMap<>();
+        this.lookupMap = new HashMap<>();
     }
 
     @Override
@@ -115,18 +121,61 @@ public class InvertedIndex implements Index {
     }
 
     @Override
-    public void load(boolean compress) {
+    public void load(boolean compress, String[] queryTerms) {
         IndexReader indexReader = new IndexReader();
-        String invertedFileName = compress ? "InvertedListCompressed" : "InvertedList";
-        this.index = indexReader.readIndex(LOOKUP_FILE_NAME, invertedFileName, compress);
+        String invertedFileName = compress ? INVERTED_INDEX_FILE_NAME_COMPRESSED : INVERTED_INDEX_FILE_NAME_UNCOMPRESSED;
+        String lookupFileName = compress ? LOOKUP_FILE_NAME_COMPRESSED : LOOKUP_FILE_NAME_UNCOMPRESSED;
+        this.lookupMap = indexReader.readLookup(lookupFileName);
+        Map<String, List<String>> lookupMap = null;
+        if(queryTerms != null) {
+            lookupMap = new HashMap<>();
+            for (String term : queryTerms) {
+                lookupMap.put(term, this.lookupMap.get(term));
+            }
+        }
+        else {
+            lookupMap = this.lookupMap;
+        }
+        this.index = indexReader.readIndex(invertedFileName, lookupMap, compress);
         this.sceneIDMap = indexReader.readStringMap(SCENE_ID_MAP_FILE_NAME);
         this.playIDMap = indexReader.readStringMap(PLAY_ID_MAP_FILE_NAME);
         this.docLengthMap = indexReader.readIntegerMap(DOC_LENGTH_MAP_FILE_NAME);
     }
 
     @Override
-    public List<Map.Entry<Integer, Double>> retrieveQuery(String query, int k) {
-        throw new NotImplementedException();
+    public List<Map.Entry<Integer, Double>> retrieveQuery(String[] queryTerms, int k) {
+        PriorityQueue<Map.Entry<Integer, Double>> pq = new PriorityQueue<>(new CustomComparator());
+        PostingList[] postingLists = new PostingList[queryTerms.length];
+        for(int i=0; i<postingLists.length; i++) {
+            postingLists[i] = this.getPostings(queryTerms[i]);
+        }
+        for(int doc=1; doc<=this.getDocCount(); doc++)
+        {
+            Double score = 0.0;
+            for(PostingList p : postingLists)
+            {
+                int postingIndex = 0;
+                Posting posting = null;
+                while(postingIndex < p.getPostings().size()){
+                    if(p.getPostings().get(postingIndex).getDocID() == doc){
+                        posting = p.getPostings().get(postingIndex);
+                        break;
+                    }
+                    postingIndex++;
+                }
+                if(posting != null && posting.getDocID() == doc) {
+                    score += posting.getTermFrequency();
+                }
+            }
+            pq.offer(new AbstractMap.SimpleEntry<Integer, Double>(doc, score));
+        }
+        List<Map.Entry<Integer, Double>> result = new ArrayList<>();
+        while(!pq.isEmpty() && k > 0)
+        {
+            result.add(pq.poll());
+            k--;
+        }
+        return result;
     }
 
     public Map<String, PostingList> getIndex() {
@@ -137,4 +186,12 @@ public class InvertedIndex implements Index {
         this.index = index;
     }
 
+}
+
+class CustomComparator implements Comparator<Map.Entry<Integer, Double>>{
+
+    @Override
+    public int compare(Map.Entry<Integer, Double> o1, Map.Entry<Integer, Double> o2) {
+        return Double.compare(o2.getValue(), o1.getValue());
+    }
 }
