@@ -1,6 +1,5 @@
 package utilities;
 
-import index.InvertedIndex;
 import index.Posting;
 import index.PostingList;
 
@@ -10,8 +9,18 @@ import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+/**
+ * Defines methods to read inverted index and maps from files on disk
+ */
 public class IndexReader {
 
+    /**
+     * Reads an inverted index from disk
+     * @param invertedFileName The name of the inverted index file
+     * @param lookupMap The lookup map
+     * @param isCompressed Whether the index is compressed or not
+     * @return The inverted index
+     */
     public Map<String, PostingList> readIndex(String invertedFileName, Map<String, List<String>> lookupMap, boolean isCompressed)
     {
         Map<String, PostingList> invertedIndex = null;
@@ -65,6 +74,11 @@ public class IndexReader {
         return invertedIndex;
     }
 
+    /**
+     * Reads a map from disk. Useful for getting sceneIDMap, playIDMap
+     * @param filename The name of the file on disk
+     * @return The map
+     */
     public Map<Integer, String> readStringMap(String filename)
     {
         Map<Integer, String> result = null;
@@ -85,6 +99,11 @@ public class IndexReader {
         return result;
     }
 
+    /**
+     * Reads a map from disk. Useful for getting docLengthMap
+     * @param filename The name of the file on disk
+     * @return The map
+     */
     public Map<Integer, Integer> readIntegerMap(String filename)
     {
         Map<Integer, Integer> result = null;
@@ -104,10 +123,21 @@ public class IndexReader {
         }
         return result;
     }
+
+    /**
+     * Converts a byte array to int
+     * @param bytes The input byte array
+     * @return The integer corresponding to the byte array
+     */
     private int fromByteArray(byte[] bytes) {
         return ByteBuffer.wrap(bytes).getInt();
     }
 
+    /**
+     * Reads the lookup map from a file on disk
+     * @param lookupFileName The name of the lookup file
+     * @return The lookup map
+     */
     public Map<String, List<String>> readLookup(String lookupFileName)
     {
         Map<String, List<String>> result = null;

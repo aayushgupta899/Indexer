@@ -68,6 +68,8 @@ public interface Index {
     /**
      * Load the index onto memory
      * @param compress Whether the index is compressed or not
+     * @param queryTerms The query terms. If this is not null, only the index
+     *                   corresponding to these terms is loaded in memory
      */
     void load(boolean compress, String[] queryTerms);
 

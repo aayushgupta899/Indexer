@@ -12,16 +12,31 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+/**
+ * Generates the query terms (700 terms, 7 per line)
+ */
 public class QueryGenerator {
 
+    private static final String QUERY_FILE_NAME = "QueryTerms700.txt";
+
+    /**
+     * @param args compress
+     */
     public static void main(String[] args) {
         InvertedIndex invertedIndex = new InvertedIndex();
-        invertedIndex.load(true, null);
-        String filename = "Query_700.txt";
+        String filename = QUERY_FILE_NAME;
+        boolean compress = Boolean.parseBoolean(args[0]);
+        invertedIndex.load(compress, null);
         QueryGenerator queryGenerator = new QueryGenerator();
         queryGenerator.generateQueryTerms(invertedIndex, filename, false);
     }
 
+    /**
+     * Generates the query terms and writes them to file
+     * @param invertedIndex The inverted index
+     * @param filename The output filename
+     * @param withStats Whether to write with document frequency and term frequency
+     */
     public void generateQueryTerms(InvertedIndex invertedIndex, String filename, boolean withStats)
     {
         Set<String> vocabulary = invertedIndex.getVocabulary();

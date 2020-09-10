@@ -1,14 +1,12 @@
 package utilities;
 
 import index.InvertedIndex;
-import index.Posting;
 import index.PostingList;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,8 +15,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Defines methods to write index/maps to disk
+ * @param <T> String/Integer depending on which map is being written
+ */
 public class IndexWriter<T> {
 
+    /**
+     * Writes an inverted index and lookup map to file
+     * @param invertedIndex The inverted index to write to file
+     * @param lookupFileName The name of lookup file
+     * @param invertedFileName The name of the inverted index file
+     * @param compress Whether to compress the index or not
+     */
     public void writeIndex(InvertedIndex invertedIndex, String lookupFileName, String invertedFileName, boolean compress){
         long offset = 0;
         try (PrintWriter lookupWriter = new PrintWriter(lookupFileName, "UTF-8");
@@ -52,6 +61,11 @@ public class IndexWriter<T> {
         }
     }
 
+    /**
+     * Writes a map to disk
+     * @param filename The name of the file
+     * @param map The map
+     */
     public void writeMap(String filename, Map<Integer, T> map)
     {
         List<String> lines = new ArrayList<>();

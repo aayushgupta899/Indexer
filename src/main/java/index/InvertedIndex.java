@@ -1,10 +1,12 @@
 package index;
 
-import utilities.Compressor;
 import utilities.IndexReader;
 
 import java.util.*;
 
+/**
+ * Implements the Inverted Index
+ */
 public class InvertedIndex implements Index {
 
     private Map<String, PostingList> index;
@@ -188,6 +190,9 @@ public class InvertedIndex implements Index {
 
 }
 
+/**
+ * Custom Comparator which sorts a priority queue in descending order
+ */
 class CustomComparator implements Comparator<Map.Entry<Integer, Double>>{
 
     @Override

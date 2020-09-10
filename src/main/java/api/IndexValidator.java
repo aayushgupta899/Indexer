@@ -1,35 +1,40 @@
-package utilities;
+package api;
 
-import api.IndexBuilder;
 import index.InvertedIndex;
 import index.PostingList;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
+/**
+ * Defines methods to check if two inverted indices are identical or not
+ */
 public class IndexValidator {
 
-    List<String> faultyKeys;
+    /**
+     * @param args JSON_filename compress
+     */
+    public static void main(String[] args) {
 
-    public IndexValidator()
-    {
-        faultyKeys = new ArrayList<>();
+        String sourceJSONFileName = args[0];
+        boolean compress = Boolean.parseBoolean(args[1]);
+        IndexValidator validator = new IndexValidator();
+        validator.indexValidatorHelper(sourceJSONFileName, compress);
     }
 
-    public static void main(String[] args) throws IOException {
-
-        String sourceJSONFileName = "/Users/aayushgupta/Downloads/shakespeare-scenes.json";
+    /**
+     * Helper method for validating index
+     * @param sourceJSONFileName The JSON file which contains the data
+     * @param compress Whether to check with the compressed index or not
+     */
+    public void indexValidatorHelper(String sourceJSONFileName, boolean compress) {
         IndexBuilder sourceIndexBuilder = new IndexBuilder();
         sourceIndexBuilder.buildIndex(sourceJSONFileName);
         InvertedIndex sourceInvertedIndex = sourceIndexBuilder.getInvertedIndex();
-        System.out.println("Terms in source:"+sourceInvertedIndex.getIndex().size());
+        System.out.println("Terms in source: "+sourceInvertedIndex.getIndex().size());
         InvertedIndex invertedIndexFromFile = new InvertedIndex();
-        invertedIndexFromFile.load(true, null);
-        IndexValidator validator = new IndexValidator();
-        if(validator.checkIfIndicesAreEqual(sourceInvertedIndex, invertedIndexFromFile))
+        invertedIndexFromFile.load(compress, null);
+        System.out.println("Terms in index from file: "+sourceInvertedIndex.getIndex().size());
+        if(this.checkIfIndicesAreIdentical(sourceInvertedIndex, invertedIndexFromFile))
         {
             System.out.println("Indices are the same");
         }
@@ -39,10 +44,13 @@ public class IndexValidator {
         }
     }
 
-    public boolean checkIfIndicesAreEqual(InvertedIndex index1, InvertedIndex index2)
-    {
-        boolean flag = true;
-        int count = 0;
+    /**
+     * Checks if two indices are identical or not
+     * @param index1
+     * @param index2
+     * @return
+     */
+    public boolean checkIfIndicesAreIdentical(InvertedIndex index1, InvertedIndex index2) {
         try {
             if(index1.getIndex().size() != index2.getIndex().size())
             {
@@ -54,35 +62,28 @@ public class IndexValidator {
                 if(!index2.getIndex().containsKey(entry.getKey()))
                 {
                     System.out.println("Key: "+entry.getKey()+" not in second key");
-                    flag = false;
+                    return false;
                 }
                 Integer[] postings1 = entry.getValue().toIntegerArray();
                 Integer[] postings2 = index2.getPostings(entry.getKey()).toIntegerArray();
                 if(postings1.length != postings2.length)
                 {
                     System.out.println("Postings length for Key: "+entry.getKey()+" not same in second key");
-                    flag = false;
+                    return false;
                 }
                 for(int i=0; i<postings1.length; i++)
                 {
                     if(!postings1[i].equals(postings2[i]))
                     {
                         System.out.println("Posting at pos: "+i+" not same for Key: "+entry.getKey());
-                        flag = false;
+                        return false;
                     }
-                }
-                if(!flag)
-                {
-                    count++;
-                    faultyKeys.add(entry.getKey());
-                    flag = true;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            flag = false;
         }
-        return count == 0;
+        return true;
     }
 
 }

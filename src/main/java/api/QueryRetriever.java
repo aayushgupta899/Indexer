@@ -12,14 +12,28 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Retrieves results for queries stored on file from an inverted index
+ */
 public class QueryRetriever {
 
+    /**
+     * @param args filename compress k
+     */
     public static void main(String[] args) {
         QueryRetriever queryRetriever = new QueryRetriever();
-        queryRetriever.retrieveQuery("Query_700.txt", false, 3);
-        queryRetriever.retrieveQuery("Query_700.txt", true, 3);
+        String filename = args[0];
+        boolean compress = Boolean.parseBoolean(args[1]);
+        int k = Integer.parseInt(args[2]);
+        queryRetriever.retrieveQuery(filename, compress, k);
     }
 
+    /**
+     * Retrieves the results for query terms
+     * @param queryFileName The name of the file containing the queries
+     * @param compress Whether the index is compressed or not
+     * @param k The number of results to return
+     */
     public void retrieveQuery(String queryFileName, boolean compress, int k) {
         InvertedIndex invertedIndex = new InvertedIndex();
         List<Map.Entry<Integer, Double>> results;

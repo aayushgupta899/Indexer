@@ -4,20 +4,15 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 
+/**
+ * Defines methods for VByte Encoding/Decoding with Delta Compression/Decompression
+ */
 public class Compressor {
 
-    public static void main(String[] args) {
-        Integer[] a = {1, 2, 3,4, 2, 3, 2,4,5, 3, 6, 1,2,3,4,5,6};
-        System.out.println("Input:" +Arrays.toString(a));
-        ByteBuffer byteBuffer = ByteBuffer.allocate(a.length);
-        Compressor compressor = new Compressor();
-        compressor.compress(a, byteBuffer);
-        byte[] arr = byteBuffer.array();
-        IntBuffer output = IntBuffer.allocate(a.length);
-        compressor.decompress(arr, output);
-        System.out.println("Output: "+Arrays.toString(output.array()));
-    }
-
+    /**
+     * Encodes an array using Delta encoding
+     * @param input The input array
+     */
     public void deltaEncode(Integer[] input){
         int idx = 0;
         int savedDocID = 0;
@@ -45,6 +40,11 @@ public class Compressor {
         }
 
     }
+
+    /**
+     * Decodes an array which was encoded using Delta encoding
+     * @param output The buffer which contains delta encoded data
+     */
     public void deltaDecode(IntBuffer output){
         int[] outputArray = output.array();
         int idx = 0;
@@ -68,6 +68,11 @@ public class Compressor {
         }
     }
 
+    /**
+     * Compresses an array using Delta encoding and VByte compression
+     * @param input The input array to compress
+     * @param output The buffer to write the output to
+     */
     public void compress(Integer[] input, ByteBuffer output)
     {
         deltaEncode(input);
@@ -82,6 +87,12 @@ public class Compressor {
         }
     }
 
+    /**
+     * Decompresses an array which was compressed using VByte Compression
+     * and encoded using Delta encoding
+     * @param input The input which is to be decompressed
+     * @param output The output to write to
+     */
     public void decompress(byte[] input, IntBuffer output)
     {
         for(int i=0; i<input.length; i++)

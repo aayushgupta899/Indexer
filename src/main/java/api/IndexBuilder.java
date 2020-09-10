@@ -7,10 +7,9 @@ import org.json.simple.JSONObject;
 import utilities.IndexWriter;
 import utilities.JSONFileReader;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
+/**
+ * Contains methods to build and inverted index and write it to disk
+ */
 public class IndexBuilder {
 
     private InvertedIndex invertedIndex;
@@ -33,10 +32,13 @@ public class IndexBuilder {
     private static final String PLAY_ID_MAP_FILE_NAME = "PlayIDMap.txt";
     private static final String DOC_LENGTH_MAP_FILE_NAME = "DocLengthMap.txt";
 
+    /**
+     * @param args filename compress
+     */
     public static void main(String[] args) {
 
-        String filename = "/Users/aayushgupta/Downloads/shakespeare-scenes.json";
-        boolean toCompress = true;
+        String filename = args[0];
+        boolean toCompress = Boolean.parseBoolean(args[1]);
         IndexBuilder indexBuilder = new IndexBuilder();
         indexBuilder.buildIndex(filename);
         String invertedIndexFileName = toCompress ? INVERTED_INDEX_FILE_NAME_COMPRESSED : INVERTED_INDEX_FILE_NAME_UNCOMPRESSED;
@@ -46,6 +48,12 @@ public class IndexBuilder {
         indexBuilder.writeMapToFile(PLAY_ID_MAP_FILE_NAME, MAP_NAME.PLAY_ID);
         indexBuilder.writeMapToFile(DOC_LENGTH_MAP_FILE_NAME, MAP_NAME.DOC_LENGTH);
     }
+
+    /**
+     * Writes a HashMap to a file on disk
+     * @param fileName The name of the output file
+     * @param map The map to be written
+     */
     public void writeMapToFile(String fileName, MAP_NAME map)
     {
         switch (map)
@@ -64,17 +72,29 @@ public class IndexBuilder {
                 break;
         }
     }
+
+    /**
+     * Writes the inverted index and the lookup map to disk
+     * @param lookupFileName The name of the lookup file
+     * @param invertedFileName The name of the inverted index file
+     * @param toCompress Whether to compress the index or not
+     */
     public void writeIndexToFile(String lookupFileName, String invertedFileName, boolean toCompress)
     {
         IndexWriter<String> indexWriter = new IndexWriter<>();
         indexWriter.writeIndex(this.invertedIndex, lookupFileName, invertedFileName, toCompress);
     }
-    public void buildIndex(String filename)
+
+    /**
+     * Builds the inverted index
+     * @param inputFileName The name of the input file
+     */
+    public void buildIndex(String inputFileName)
     {
         this.invertedIndex = new InvertedIndex();
 
         JSONFileReader jsonFileReader = new JSONFileReader();
-        JSONArray scenes = jsonFileReader.readFromJSONFile(filename);
+        JSONArray scenes = jsonFileReader.readFromJSONFile(inputFileName);
         for(int i=0; i<scenes.size(); i++)
         {
             JSONObject scene = (JSONObject) scenes.get(i);
