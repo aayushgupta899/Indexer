@@ -62,7 +62,7 @@ public class PostingList {
 
     /**
      * Gets the document count
-     * @return
+     * @return The document count
      */
     public int getDocumentCount()
     {

@@ -16,7 +16,7 @@ import java.util.Set;
  */
 public class DiceCalculator {
 
-    private static final String OUTPUT_FILE_NAME = "QueryTerms1400_test.txt";
+    private static final String OUTPUT_FILE_NAME = "QueryTerms1400.txt";
 
     /**
      * @param args filename compress

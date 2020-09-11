@@ -42,6 +42,7 @@ public class QueryRetriever {
 
     /**
      * Retrieves the results for query terms and outputs the time taken
+     * @param invertedIndex The inverted index
      * @param queryFileName The name of the file containing the queries
      * @param compress Whether the index is compressed or not
      * @param k The number of results to return

@@ -52,9 +52,9 @@ public class IndexValidator {
 
     /**
      * Checks if two indices are identical or not
-     * @param index1
-     * @param index2
-     * @return
+     * @param index1 The first index
+     * @param index2 The second index
+     * @return true/false
      */
     public boolean checkIfIndicesAreIdentical(InvertedIndex index1, InvertedIndex index2) {
         try {

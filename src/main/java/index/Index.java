@@ -71,7 +71,7 @@ public interface Index {
      * @param queryTerms The query terms for which the index is to be retrieved.
      *                   If this is null, the entire index is retrieved from disk into memory
      */
-    public void getInvertedIndex(boolean compress, String[] queryTerms);
+    void getInvertedIndex(boolean compress, String[] queryTerms);
 
     /**
      * Load the index onto memory
@@ -83,7 +83,7 @@ public interface Index {
      * Returns a query on the index
      * @param queryTerms The array containing query terms
      * @param k The number of results to return
-     * @return
+     * @return List of tuples (DocID, Score)
      */
     List<Map.Entry<Integer, Double>> retrieveQuery(String[] queryTerms, int k);
 
