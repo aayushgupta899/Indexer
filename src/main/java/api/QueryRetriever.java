@@ -30,17 +30,18 @@ public class QueryRetriever {
         System.out.println("Is Index Compressed: "+compress);
         System.out.println("k: "+k);
         System.out.println("*******************************");
-        queryRetriever.retrieveQuery(filename, compress, k);
+        queryRetriever.retrieveQueryHelper(filename, compress, k);
+        queryRetriever.retrieveQueryTimed(filename, compress, k);
         System.out.println("*******************************");
     }
 
     /**
-     * Retrieves the results for query terms
+     * Retrieves the results for query terms and outputs the time taken
      * @param queryFileName The name of the file containing the queries
      * @param compress Whether the index is compressed or not
      * @param k The number of results to return
      */
-    public void retrieveQuery(String queryFileName, boolean compress, int k) {
+    public void retrieveQueryTimed(String queryFileName, boolean compress, int k) {
         InvertedIndex invertedIndex = new InvertedIndex();
         List<Map.Entry<Integer, Double>> results;
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(queryFileName), StandardCharsets.UTF_8));) {
@@ -59,4 +60,28 @@ public class QueryRetriever {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Helper method to retrieve the query from disk to cache
+     * @param queryFileName The name of the input query file
+     * @param compress Whether the index is compressed or not
+     * @param k The number of results to return
+     */
+    private void retrieveQueryHelper(String queryFileName, boolean compress, int k) {
+        InvertedIndex invertedIndex = new InvertedIndex();
+        List<Map.Entry<Integer, Double>> results;
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(queryFileName), StandardCharsets.UTF_8));) {
+            String currentLine = reader.readLine();
+            while(currentLine != null) {
+                String[] queryTerms = currentLine.split("\\s+");
+                invertedIndex.load(compress, queryTerms);
+                results = invertedIndex.retrieveQuery(queryTerms, k);
+                currentLine = reader.readLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }
