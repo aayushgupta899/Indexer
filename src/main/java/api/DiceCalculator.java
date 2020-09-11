@@ -7,6 +7,7 @@ import index.PostingList;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -34,7 +35,7 @@ public class DiceCalculator {
         InvertedIndex invertedIndex = new InvertedIndex();
         invertedIndex.load(compress, null);
         try(BufferedReader reader=  new BufferedReader(new InputStreamReader(new FileInputStream(filename), StandardCharsets.UTF_8));
-            PrintWriter diceWriter = new PrintWriter("Queries_1400.txt", "UTF-8");) {
+            PrintWriter diceWriter = new PrintWriter("Queries_1400_1.txt", "UTF-8");) {
             Set<String> vocabulary = invertedIndex.getVocabulary();
             String query = reader.readLine();
             while (query != null) {
@@ -92,10 +93,10 @@ public class DiceCalculator {
             }
             if(b != null && b.getDocID() == a.getDocID())
             {
-                Integer[] aPos = a.getPositionsArray();
-                Integer[] bPos = b.getPositionsArray();
-                for(int aIdx=0; aIdx<aPos.length; aIdx++) {
-                    for(int bIdx=0; bIdx<bPos.length; bIdx++) {
+                Set<Integer> aPos = new HashSet<>(a.getPositions());
+                Set<Integer> bPos = new HashSet<>(b.getPositions());
+                for(int pos : aPos) {
+                    if(bPos.contains(pos+1)) {
                         nAB++;
                     }
                 }
