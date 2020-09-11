@@ -9,10 +9,29 @@ import java.util.*;
  */
 public class InvertedIndex implements Index {
 
+    /**
+     * This stores our actual inverted index
+     */
     private Map<String, PostingList> index;
+    /**
+     * This stores our lookup map, which maps from the term to
+     * a list containing offset, bytes written, term frequency and document frequency
+     */
     private Map<String, List<String>> lookupMap;
+    /**
+     * This stores our scene ID Map, which maps from the
+     * integer document ID to the scene ID
+     */
     private Map<Integer, String> sceneIDMap;
+    /**
+     * This stores our play ID Map, which maps from the
+     * integer document ID to the play ID
+     */
     private Map<Integer, String> playIDMap;
+    /**
+     * This stores our doc length Map, which maps from the
+     * integer document ID to the length of the document
+     */
     private Map<Integer, Integer> docLengthMap;
 
     private static final String INVERTED_INDEX_FILE_NAME_COMPRESSED = "InvertedListCompressed";
@@ -152,7 +171,7 @@ public class InvertedIndex implements Index {
 
     @Override
     public List<Map.Entry<Integer, Double>> retrieveQuery(String[] queryTerms, int k) {
-        PriorityQueue<Map.Entry<Integer, Double>> pq = new PriorityQueue<>(new CustomComparator());
+        PriorityQueue<Map.Entry<Integer, Double>> pq = new PriorityQueue<>((o1, o2) -> Double.compare(o2.getValue(), o1.getValue()));
         PostingList[] postingLists = new PostingList[queryTerms.length];
         for(int i=0; i<postingLists.length; i++) {
             postingLists[i] = this.getPostings(queryTerms[i]);
@@ -175,7 +194,7 @@ public class InvertedIndex implements Index {
                     score += posting.getTermFrequency();
                 }
             }
-            pq.offer(new AbstractMap.SimpleEntry<Integer, Double>(doc, score));
+            pq.offer(new AbstractMap.SimpleEntry<>(doc, score));
         }
         List<Map.Entry<Integer, Double>> result = new ArrayList<>();
         while(!pq.isEmpty() && k > 0)
@@ -194,15 +213,4 @@ public class InvertedIndex implements Index {
         this.index = index;
     }
 
-}
-
-/**
- * Custom Comparator which sorts a priority queue in descending order
- */
-class CustomComparator implements Comparator<Map.Entry<Integer, Double>>{
-
-    @Override
-    public int compare(Map.Entry<Integer, Double> o1, Map.Entry<Integer, Double> o2) {
-        return Double.compare(o2.getValue(), o1.getValue());
-    }
 }

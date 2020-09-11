@@ -16,7 +16,7 @@ import java.util.Set;
  */
 public class DiceCalculator {
 
-    private static final String OUTPUT_FILE_NAME = "QueryTerms1400.txt";
+    private static final String OUTPUT_FILE_NAME = "QueryTerms1400_test.txt";
 
     /**
      * @param args filename compress
@@ -26,6 +26,7 @@ public class DiceCalculator {
         String filename = args[0];
         boolean compress = Boolean.parseBoolean(args[1]);
         System.out.println("Starting the dice term generation process with the following arguments:");
+        System.out.println("Input file name: "+filename);
         System.out.println("Is Index Compressed: "+compress);
         System.out.println("Output Query File name: "+OUTPUT_FILE_NAME);
         System.out.println("*******************************");

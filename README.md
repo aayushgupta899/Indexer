@@ -17,8 +17,8 @@ chmod +x gradlew
 ./gradlew build
 ```
 ## Running the code
-This project has 5 runnable apps:
-1. `src/api/IndexBuilder`: This is used to build the inverted index. The command line arguments for this are:
+This project has 6 runnable apps:
+1. `api/IndexBuilder`: This is used to build the inverted index. The command line arguments for this are:
     * `filename` - The absolute path of the input JSON file (in this case - Shakespeare plays).
     * `compress` - Whether to compress the index or not (true/false).  
  
@@ -30,7 +30,7 @@ This project has 5 runnable apps:
    ```
    ./gradlew -P mainClass=api.IndexBuilder execute --args='/Users/aayushgupta/Downloads/shakespeare-scenes.json true' 
    ```
-2. `src/api/IndexValidator`: This is used to validate whether the index written on disk is identical to the index parsed from JSON. The command line arguments for this are:
+2. `api/IndexValidator`: This is used to validate whether the index written on disk is identical to the index parsed from JSON. The command line arguments for this are:
     * `JSON_filename` - The absolute path for the JSON file which was used to create the original index.
     * `compress` - Whether the index is compressed or not (true/false)
     
@@ -42,7 +42,7 @@ This project has 5 runnable apps:
     ```
     ./gradlew -P mainClass=api.IndexValidator execute --args='/Users/aayushgupta/Downloads/shakespeare-scenes.json true' 
     ```
-3. `src/api/QueryRetriever`: This is used to retrieve query results from an index built using `src/api/IndexBuilder`. The input queries are stored in a file, in which each line contains a set of terms separated by whitespace. It prints the time taken to perform the retrieval on the output screen, which can be used to compare the query retrieval times for different indices. This takes the following command line arguments:
+3. `api/QueryRetriever`: This is used to retrieve query results from an index built using `src/api/IndexBuilder`. The input queries are stored in a file, in which each line contains a set of terms separated by whitespace. It prints the time taken to perform the retrieval on the output screen, which can be used to compare the query retrieval times for different indices. This takes the following command line arguments:
     * `filename` - This is the absolute/relative path of the file containing the queries. The relative path should be relative to the root of the project.
     * `compress` - Whether the inverted index to query from is compressed or not (true/false).
     * `k` - The number of results to return.
@@ -55,7 +55,7 @@ This project has 5 runnable apps:
     ```
     ./gradlew -P mainClass=api.QueryRetriever execute --args='Queries_700.txt true 4' 
     ```
-4. `src/api/QueryGenerator`: This is used to generate the query terms. It generates 7 terms on each line of the file, which are separated by whitespace, and produces 100 such lines. These are stored on disk. It takes the following command line parameters:
+4. `api/QueryGenerator`: This is used to generate the query terms. It generates 7 terms on each line of the file, which are separated by whitespace, and produces 100 such lines. These are stored on disk. It takes the following command line parameters:
     * `compress`: Whether the inverted index is compressed or not (true/false).
     
     To run the app, the following command is required:
@@ -66,7 +66,7 @@ This project has 5 runnable apps:
     ```
     ./gradlew -P mainClass=api.QueryGenerator execute --args='true' 
     ```
-5. `src/api/DiceCalculator`: This is used to calculate the DICE coefficient for each of the query terms and return the term corresponding to the maximum DICE score, which is written to file, along with the original query terms. It takes the following command line parameters:
+5. `api/DiceCalculator`: This is used to calculate the DICE coefficient for each of the query terms and return the term corresponding to the maximum DICE score, which is written to file, along with the original query terms. It takes the following command line parameters:
     * `filename` - The absolute/relative path of the file which has the input queries. The terms should be in separate lines, and each term in a line should be separated by a whitespace character.
     * `compress` - Whether the inverted index is compressed or not (true/false).
     
@@ -77,6 +77,17 @@ This project has 5 runnable apps:
     An example would be:
     ```
     ./gradlew -P mainClass=api.DiceCalculator execute --args='Queries_700.txt true' 
+    ```
+6. `api/StatisticsCalculator`: This is used for calculating certain statistics, such as the shortest scene, longest scene, average length of a scene, shortest play etc. It takes the following command line parameters:
+    * `compress` - Whether the inverted index is compressed or not (true/false).
+    
+    To run the app, the following command is required:
+    ```
+    ./gradlew -P mainClass=api.StatisticsCalculator execute --args='<compress>' 
+    ```
+    An example would be:
+    ```
+    ./gradlew -P mainClass=api.StatisticsCalculator execute --args='true' 
     ```
 ## Troubleshooting
 1. The gradle commands require JAVA_HOME environment variable to be correctly set in the system.
