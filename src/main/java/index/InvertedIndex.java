@@ -123,12 +123,8 @@ public class InvertedIndex implements Index {
     }
 
     @Override
-    public void load(boolean compress, String[] queryTerms) {
-        IndexReader indexReader = new IndexReader();
-        String invertedFileName = compress ? INVERTED_INDEX_FILE_NAME_COMPRESSED : INVERTED_INDEX_FILE_NAME_UNCOMPRESSED;
-        String lookupFileName = compress ? LOOKUP_FILE_NAME_COMPRESSED : LOOKUP_FILE_NAME_UNCOMPRESSED;
-        this.lookupMap = indexReader.readLookup(lookupFileName);
-        Map<String, List<String>> lookupMap = null;
+    public void getInvertedIndex(boolean compress, String[] queryTerms){
+        Map<String, List<String>> lookupMap;
         if(queryTerms != null) {
             lookupMap = new HashMap<>();
             for (String term : queryTerms) {
@@ -138,11 +134,21 @@ public class InvertedIndex implements Index {
         else {
             lookupMap = this.lookupMap;
         }
+        IndexReader indexReader = new IndexReader();
+        String invertedFileName = compress ? INVERTED_INDEX_FILE_NAME_COMPRESSED : INVERTED_INDEX_FILE_NAME_UNCOMPRESSED;
         this.index = indexReader.readIndex(invertedFileName, lookupMap, compress);
+    }
+
+    @Override
+    public void load(boolean compress) {
+        IndexReader indexReader = new IndexReader();
+        String lookupFileName = compress ? LOOKUP_FILE_NAME_COMPRESSED : LOOKUP_FILE_NAME_UNCOMPRESSED;
+        this.lookupMap = indexReader.readLookup(lookupFileName);
         this.sceneIDMap = indexReader.readStringMap(SCENE_ID_MAP_FILE_NAME);
         this.playIDMap = indexReader.readStringMap(PLAY_ID_MAP_FILE_NAME);
         this.docLengthMap = indexReader.readIntegerMap(DOC_LENGTH_MAP_FILE_NAME);
     }
+
 
     @Override
     public List<Map.Entry<Integer, Double>> retrieveQuery(String[] queryTerms, int k) {

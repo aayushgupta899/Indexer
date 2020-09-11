@@ -30,7 +30,8 @@ public class QueryGenerator {
         System.out.println("Is Index Compressed: "+compress);
         System.out.println("Output Query File name: "+QUERY_FILE_NAME);
         System.out.println("*******************************");
-        invertedIndex.load(compress, null);
+        invertedIndex.load(compress);
+        invertedIndex.getInvertedIndex(compress, null);
         QueryGenerator queryGenerator = new QueryGenerator();
         queryGenerator.generateQueryTerms(invertedIndex, filename, false);
         System.out.println("Query Terms generated successfully!");

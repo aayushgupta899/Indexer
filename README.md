@@ -78,4 +78,7 @@ This project has 5 runnable apps:
     ```
     ./gradlew -P mainClass=api.DiceCalculator execute --args='Queries_700.txt true' 
     ```
+## Troubleshooting
+1. The gradle commands require JAVA_HOME environment variable to be correctly set in the system.
+2. If the above mentioned commands fail to build the code, please use IntelliJ to import the project. It will import the project correctly, and install the dependencies. After that, the gradle commands can be used, or the files can be run using IntelliJ.
 

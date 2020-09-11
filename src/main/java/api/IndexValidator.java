@@ -37,7 +37,8 @@ public class IndexValidator {
         InvertedIndex sourceInvertedIndex = sourceIndexBuilder.getInvertedIndex();
         System.out.println("Terms in source: "+sourceInvertedIndex.getIndex().size());
         InvertedIndex invertedIndexFromFile = new InvertedIndex();
-        invertedIndexFromFile.load(compress, null);
+        invertedIndexFromFile.load(compress);
+        invertedIndexFromFile.getInvertedIndex(compress, null);
         System.out.println("Terms in index from file: "+sourceInvertedIndex.getIndex().size());
         if(this.checkIfIndicesAreIdentical(sourceInvertedIndex, invertedIndexFromFile))
         {

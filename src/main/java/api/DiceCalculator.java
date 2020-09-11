@@ -41,7 +41,8 @@ public class DiceCalculator {
      */
     public void diceHelper(String filename, boolean compress){
         InvertedIndex invertedIndex = new InvertedIndex();
-        invertedIndex.load(compress, null);
+        invertedIndex.load(compress);
+        invertedIndex.getInvertedIndex(compress, null);
         try(BufferedReader reader=  new BufferedReader(new InputStreamReader(new FileInputStream(filename), StandardCharsets.UTF_8));
             PrintWriter diceWriter = new PrintWriter(OUTPUT_FILE_NAME, "UTF-8");) {
             Set<String> vocabulary = invertedIndex.getVocabulary();

@@ -30,8 +30,13 @@ public class QueryRetriever {
         System.out.println("Is Index Compressed: "+compress);
         System.out.println("k: "+k);
         System.out.println("*******************************");
-        queryRetriever.retrieveQueryHelper(filename, compress, k);
-        queryRetriever.retrieveQueryTimed(filename, compress, k);
+        System.out.println("Loading Index metadata.....");
+        InvertedIndex invertedIndex = new InvertedIndex();
+        invertedIndex.load(compress);
+        System.out.println("Index metadata loaded!");
+        System.out.println("*******************************");
+        queryRetriever.retrieveQueryHelper(invertedIndex, filename, compress, k);
+        queryRetriever.retrieveQueryTimed(invertedIndex, filename, compress, k);
         System.out.println("*******************************");
     }
 
@@ -41,15 +46,14 @@ public class QueryRetriever {
      * @param compress Whether the index is compressed or not
      * @param k The number of results to return
      */
-    public void retrieveQueryTimed(String queryFileName, boolean compress, int k) {
-        InvertedIndex invertedIndex = new InvertedIndex();
+    public void retrieveQueryTimed(InvertedIndex invertedIndex, String queryFileName, boolean compress, int k) {
         List<Map.Entry<Integer, Double>> results;
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(queryFileName), StandardCharsets.UTF_8));) {
             Instant start = Instant.now();
             String currentLine = reader.readLine();
             while(currentLine != null) {
                 String[] queryTerms = currentLine.split("\\s+");
-                invertedIndex.load(compress, queryTerms);
+                invertedIndex.getInvertedIndex(compress, queryTerms);
                 results = invertedIndex.retrieveQuery(queryTerms, k);
                 currentLine = reader.readLine();
             }
@@ -67,14 +71,13 @@ public class QueryRetriever {
      * @param compress Whether the index is compressed or not
      * @param k The number of results to return
      */
-    private void retrieveQueryHelper(String queryFileName, boolean compress, int k) {
-        InvertedIndex invertedIndex = new InvertedIndex();
+    private void retrieveQueryHelper(InvertedIndex invertedIndex, String queryFileName, boolean compress, int k) {
         List<Map.Entry<Integer, Double>> results;
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(queryFileName), StandardCharsets.UTF_8));) {
             String currentLine = reader.readLine();
             while(currentLine != null) {
                 String[] queryTerms = currentLine.split("\\s+");
-                invertedIndex.load(compress, queryTerms);
+                invertedIndex.getInvertedIndex(compress, queryTerms);
                 results = invertedIndex.retrieveQuery(queryTerms, k);
                 currentLine = reader.readLine();
             }

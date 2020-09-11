@@ -66,12 +66,18 @@ public interface Index {
     Set<String> getVocabulary();
 
     /**
+     * Gets the inverted index from file into memory
+     * @param compress Whether the inverted index is compressed or not
+     * @param queryTerms The query terms for which the index is to be retrieved.
+     *                   If this is null, the entire index is retrieved from disk into memory
+     */
+    public void getInvertedIndex(boolean compress, String[] queryTerms);
+
+    /**
      * Load the index onto memory
      * @param compress Whether the index is compressed or not
-     * @param queryTerms The query terms. If this is not null, only the index
-     *                   corresponding to these terms is loaded in memory
      */
-    void load(boolean compress, String[] queryTerms);
+    void load(boolean compress);
 
     /**
      * Returns a query on the index
