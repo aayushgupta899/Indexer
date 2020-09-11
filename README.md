@@ -1,22 +1,22 @@
 # Indexer - Aayush Gupta
-##Overview
+## Overview
 This project defines a simple Indexer which creates an inverted index and stores it in a file on disk. It can also compress the index using VByte Compression and Delta Encoding, and has APIs for retrieval, validation, and computing the DICE Coefficient.
-##Build System
+## Build System
 The project uses the build system `gradle`. Usually, we need to install gradle in the system to run gradle commands, but here, I have provided a `gradle_wrapper` JAR file, which can build gradle projects without installing gradle on the system. The JAR file can be found in the `gradle` directory. Some important files required for the `gradle` build:
 * `build.gradle` - Contains the dependencies and other parameters
 * `settings.gradle` - Contains the settings
 * `gradlew` - A shell script which is used to build and run the project. This uses a wrapper around the gradle library, which is provided as a JAR  with this project. Therefore, there is no need to install gradle on your system.
 * `gradle.bat` - A binary file used with the gradle wrapper
 * `gradle/` - This directory contains the gradle wrapper JAR file.
-##Downloading the dependencies
+## Downloading the dependencies
 The dependencies for this project are managed using `gradle`, and are defined in a `build.gradle` file, which is provided with this project. As such, there is no need to download the dependencies manually, it will be done using `gradle`.
-##Building the code
+## Building the code
 Use the following command to build the code:
 ```
 chmod +x gradlew
 ./gradlew build
 ```
-##Running the code
+## Running the code
 This project has 5 runnable apps:
 1. `src/api/IndexBuilder`: This is used to build the inverted index. The command line arguments for this are:
     * `filename` - The absolute path of the input JSON file (in this case - Shakespeare plays).
