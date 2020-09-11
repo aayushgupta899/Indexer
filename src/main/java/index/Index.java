@@ -74,7 +74,7 @@ public interface Index {
     void getInvertedIndex(boolean compress, String[] queryTerms);
 
     /**
-     * Load the index onto memory
+     * Load the index metadata onto memory
      * @param compress Whether the index is compressed or not
      */
     void load(boolean compress);
