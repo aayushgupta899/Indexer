@@ -25,7 +25,13 @@ public class QueryRetriever {
         String filename = args[0];
         boolean compress = Boolean.parseBoolean(args[1]);
         int k = Integer.parseInt(args[2]);
+        System.out.println("Starting the query retrieval process with the following arguments:");
+        System.out.println("Input Query File name: "+filename);
+        System.out.println("Is Index Compressed: "+compress);
+        System.out.println("k: "+k);
+        System.out.println("*******************************");
         queryRetriever.retrieveQuery(filename, compress, k);
+        System.out.println("*******************************");
     }
 
     /**

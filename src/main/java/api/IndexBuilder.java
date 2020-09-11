@@ -40,13 +40,28 @@ public class IndexBuilder {
         String filename = args[0];
         boolean toCompress = Boolean.parseBoolean(args[1]);
         IndexBuilder indexBuilder = new IndexBuilder();
+        System.out.println("Starting the index building process with the following arguments:");
+        System.out.println("Filename: "+filename);
+        System.out.println("To Compress Index: "+toCompress);
+        System.out.println("Building the index....");
         indexBuilder.buildIndex(filename);
+        System.out.println("Index built successfully!");
+        System.out.println("*******************************");
         String invertedIndexFileName = toCompress ? INVERTED_INDEX_FILE_NAME_COMPRESSED : INVERTED_INDEX_FILE_NAME_UNCOMPRESSED;
         String lookupFileName = toCompress ? LOOKUP_FILE_NAME_COMPRESSED : LOOKUP_FILE_NAME_UNCOMPRESSED;
+        System.out.println("Writing the index to disk, with the following file names:");
+        System.out.println("Inverted index filename: "+invertedIndexFileName);
+        System.out.println("Lookup Map filename: "+lookupFileName);
+        System.out.println("Scene ID Map  filename: "+SCENE_ID_MAP_FILE_NAME);
+        System.out.println("Play ID Map filename: "+PLAY_ID_MAP_FILE_NAME);
+        System.out.println("Doc Length Map filename: "+DOC_LENGTH_MAP_FILE_NAME);
+        System.out.println("Writing the files to disk......");
         indexBuilder.writeIndexToFile(lookupFileName, invertedIndexFileName, toCompress);
         indexBuilder.writeMapToFile(SCENE_ID_MAP_FILE_NAME, MAP_NAME.SCENE_ID);
         indexBuilder.writeMapToFile(PLAY_ID_MAP_FILE_NAME, MAP_NAME.PLAY_ID);
         indexBuilder.writeMapToFile(DOC_LENGTH_MAP_FILE_NAME, MAP_NAME.DOC_LENGTH);
+        System.out.println("Files written successfully");
+        System.out.println("*******************************");
     }
 
     /**

@@ -16,6 +16,8 @@ import java.util.Set;
  */
 public class DiceCalculator {
 
+    private static final String OUTPUT_FILE_NAME = "QueryTerms1400.txt";
+
     /**
      * @param args filename compress
      */
@@ -23,7 +25,13 @@ public class DiceCalculator {
         DiceCalculator diceCalculator = new DiceCalculator();
         String filename = args[0];
         boolean compress = Boolean.parseBoolean(args[1]);
+        System.out.println("Starting the dice term generation process with the following arguments:");
+        System.out.println("Is Index Compressed: "+compress);
+        System.out.println("Output Query File name: "+OUTPUT_FILE_NAME);
+        System.out.println("*******************************");
         diceCalculator.diceHelper(filename, compress);
+        System.out.println("Query terms generated successfully using DICE!");
+        System.out.println("*******************************");
     }
 
     /**
@@ -35,7 +43,7 @@ public class DiceCalculator {
         InvertedIndex invertedIndex = new InvertedIndex();
         invertedIndex.load(compress, null);
         try(BufferedReader reader=  new BufferedReader(new InputStreamReader(new FileInputStream(filename), StandardCharsets.UTF_8));
-            PrintWriter diceWriter = new PrintWriter("Queries_1400_1.txt", "UTF-8");) {
+            PrintWriter diceWriter = new PrintWriter(OUTPUT_FILE_NAME, "UTF-8");) {
             Set<String> vocabulary = invertedIndex.getVocabulary();
             String query = reader.readLine();
             while (query != null) {

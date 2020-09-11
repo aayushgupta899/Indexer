@@ -17,8 +17,13 @@ public class IndexValidator {
 
         String sourceJSONFileName = args[0];
         boolean compress = Boolean.parseBoolean(args[1]);
+        System.out.println("Starting the index validation process with the following arguments:");
+        System.out.println("Source JSON file: "+sourceJSONFileName);
+        System.out.println("Is Index Compressed: "+compress);
+        System.out.println("*******************************");
         IndexValidator validator = new IndexValidator();
         validator.indexValidatorHelper(sourceJSONFileName, compress);
+        System.out.println("*******************************");
     }
 
     /**
@@ -36,11 +41,11 @@ public class IndexValidator {
         System.out.println("Terms in index from file: "+sourceInvertedIndex.getIndex().size());
         if(this.checkIfIndicesAreIdentical(sourceInvertedIndex, invertedIndexFromFile))
         {
-            System.out.println("Indices are the same");
+            System.out.println("Indices are the same!");
         }
         else
         {
-            System.out.println("Indices don't match");
+            System.out.println("Indices don't match!");
         }
     }
 

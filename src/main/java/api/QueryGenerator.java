@@ -26,9 +26,15 @@ public class QueryGenerator {
         InvertedIndex invertedIndex = new InvertedIndex();
         String filename = QUERY_FILE_NAME;
         boolean compress = Boolean.parseBoolean(args[0]);
+        System.out.println("Starting the query generation process with the following arguments:");
+        System.out.println("Is Index Compressed: "+compress);
+        System.out.println("Output Query File name: "+QUERY_FILE_NAME);
+        System.out.println("*******************************");
         invertedIndex.load(compress, null);
         QueryGenerator queryGenerator = new QueryGenerator();
         queryGenerator.generateQueryTerms(invertedIndex, filename, false);
+        System.out.println("Query Terms generated successfully!");
+        System.out.println("*******************************");
     }
 
     /**
