@@ -79,10 +79,9 @@ public class InvertedIndex implements Index {
 
     @Override
     public long getCollectionSize() {
-        int collectionSize = 0;
-        for(String term : this.index.keySet())
-        {
-            collectionSize += this.getTermFrequency(term);
+        long collectionSize = 0;
+        for(Map.Entry<Integer, Integer> entry : this.docLengthMap.entrySet()){
+            collectionSize += entry.getValue();
         }
         return collectionSize;
     }
@@ -133,7 +132,7 @@ public class InvertedIndex implements Index {
             }
             return termFrequency;
         }
-        return -1;
+        return 0;
     }
 
     @Override
@@ -142,7 +141,7 @@ public class InvertedIndex implements Index {
     }
 
     @Override
-    public void getInvertedIndex(boolean compress, String[] queryTerms){
+    public void getQueryPostings(boolean compress, String[] queryTerms){
         Map<String, List<String>> lookupMap;
         if(queryTerms != null) {
             lookupMap = new HashMap<>();
@@ -168,43 +167,49 @@ public class InvertedIndex implements Index {
         this.docLengthMap = indexReader.readIntegerMap(DOC_LENGTH_MAP_FILE_NAME);
     }
 
-
     @Override
-    public List<Map.Entry<Integer, Double>> retrieveQuery(String[] queryTerms, int k) {
-        PriorityQueue<Map.Entry<Integer, Double>> pq = new PriorityQueue<>((o1, o2) -> Double.compare(o2.getValue(), o1.getValue()));
-        PostingList[] postingLists = new PostingList[queryTerms.length];
-        for(int i=0; i<postingLists.length; i++) {
-            postingLists[i] = this.getPostings(queryTerms[i]);
+    public List<Map.Entry<Integer, Double>> retrieveQuery(String[] queryTerms, int k, boolean compress) {
+        PriorityQueue<Map.Entry<Integer, Double>> pq = new PriorityQueue<>(Comparator.comparingDouble(Map.Entry::getValue));
+        this.getQueryPostings(compress, queryTerms);
+        Map<String, PostingList> postingLists = new HashMap<>();
+        for(int i=0; i<queryTerms.length; i++) {
+            postingLists.put(queryTerms[i], this.getPostings(queryTerms[i]));
+        }
+        Map<String, Integer> queryTermCounts = new HashMap<>();
+        for(String query : queryTerms){
+            queryTermCounts.putIfAbsent(query, 0);
+            queryTermCounts.put(query, queryTermCounts.get(query)+1);
         }
         for(int doc=1; doc<=this.getDocCount(); doc++)
         {
             Double score = 0.0;
-            for(PostingList p : postingLists)
+            for(Map.Entry<String, PostingList> p : postingLists.entrySet())
             {
                 int postingIndex = 0;
                 Posting posting = null;
-                while(postingIndex < p.getPostings().size()){
-                    if(p.getPostings().get(postingIndex).getDocID() == doc){
-                        posting = p.getPostings().get(postingIndex);
+                while(postingIndex < p.getValue().getPostings().size()){
+                    if(p.getValue().getPostings().get(postingIndex).getDocID() == doc){
+                        posting = p.getValue().getPostings().get(postingIndex);
                         break;
                     }
                     postingIndex++;
                 }
                 if(posting != null && posting.getDocID() == doc) {
-                    score += posting.getTermFrequency();
+                        score += posting.getTermFrequency();
                 }
             }
             pq.offer(new AbstractMap.SimpleEntry<>(doc, score));
+            if (pq.size() > k) {
+                pq.poll();
+            }
         }
         List<Map.Entry<Integer, Double>> result = new ArrayList<>();
-        while(!pq.isEmpty() && k > 0)
-        {
+        while(!pq.isEmpty()){
             result.add(pq.poll());
-            k--;
         }
+        result.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
         return result;
     }
-
     public Map<String, PostingList> getIndex() {
         return index;
     }

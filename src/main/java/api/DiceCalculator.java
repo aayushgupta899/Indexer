@@ -16,7 +16,7 @@ import java.util.Set;
  */
 public class DiceCalculator {
 
-    private static final String OUTPUT_FILE_NAME = "QueryTerms1400.txt";
+    private static final String OUTPUT_FILE_NAME = "QueryTerms1400_test.txt";
 
     /**
      * @param args filename compress
@@ -43,7 +43,7 @@ public class DiceCalculator {
     public void diceHelper(String filename, boolean compress){
         InvertedIndex invertedIndex = new InvertedIndex();
         invertedIndex.load(compress);
-        invertedIndex.getInvertedIndex(compress, null);
+        invertedIndex.getQueryPostings(compress, null);
         try(BufferedReader reader=  new BufferedReader(new InputStreamReader(new FileInputStream(filename), StandardCharsets.UTF_8));
             PrintWriter diceWriter = new PrintWriter(OUTPUT_FILE_NAME, "UTF-8");) {
             Set<String> vocabulary = invertedIndex.getVocabulary();

@@ -31,7 +31,7 @@ public class QueryGenerator {
         System.out.println("Output Query File name: "+QUERY_FILE_NAME);
         System.out.println("*******************************");
         invertedIndex.load(compress);
-        invertedIndex.getInvertedIndex(compress, null);
+        invertedIndex.getQueryPostings(compress, null);
         QueryGenerator queryGenerator = new QueryGenerator();
         queryGenerator.generateQueryTerms(invertedIndex, filename, false);
         System.out.println("Query Terms generated successfully!");

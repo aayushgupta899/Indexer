@@ -66,12 +66,12 @@ public interface Index {
     Set<String> getVocabulary();
 
     /**
-     * Gets the inverted index from file into memory
+     * Gets the query postings from file into memory
      * @param compress Whether the inverted index is compressed or not
      * @param queryTerms The query terms for which the index is to be retrieved.
      *                   If this is null, the entire index is retrieved from disk into memory
      */
-    void getInvertedIndex(boolean compress, String[] queryTerms);
+    void getQueryPostings(boolean compress, String[] queryTerms);
 
     /**
      * Load the index metadata onto memory
@@ -83,9 +83,10 @@ public interface Index {
      * Returns a query on the index
      * @param queryTerms The array containing query terms
      * @param k The number of results to return
+     * @param compress Whether the index is compressed or not
      * @return List of tuples (DocID, Score)
      */
-    List<Map.Entry<Integer, Double>> retrieveQuery(String[] queryTerms, int k);
+    List<Map.Entry<Integer, Double>> retrieveQuery(String[] queryTerms, int k, boolean compress);
 
 
 }

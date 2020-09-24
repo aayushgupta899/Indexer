@@ -9,10 +9,51 @@ import java.util.List;
 public class PostingList {
 
     private List<Posting> postings;
+    private int postingsIndex;
 
     public PostingList()
     {
         this.postings = new ArrayList<>();
+        this.postingsIndex = -1;
+    }
+
+    /**
+     * reset the list pointer to the first element
+     */
+    public void startIteration () {
+        postingsIndex = 0;
+    }
+    /**
+     * are there any more
+     * @return true if there are remaining elements in the list
+     */
+    public boolean hasMore() {
+        return (postingsIndex >= 0 && postingsIndex < postings.size());
+    }
+    /**
+     * skip to or past the specified document id
+     * @param docid the id to skip to
+     *
+     */
+    public void skipTo (int docid) {
+        while (postingsIndex < postings.size() &&
+                getCurrentPosting().getDocID() < docid) {
+            postingsIndex++;
+        }
+    }
+    /**
+     *
+     * @return the current posting in the list or null if the list is empty
+     * or consumed
+     */
+    public Posting getCurrentPosting() {
+        Posting retval = null;
+        try {
+            retval = postings.get(postingsIndex);
+        } catch (IndexOutOfBoundsException ex) {
+            // ignore
+        }
+        return retval;
     }
 
     public List<Posting> getPostings() {

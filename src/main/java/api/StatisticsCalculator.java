@@ -16,7 +16,7 @@ public class StatisticsCalculator {
         boolean compress = Boolean.parseBoolean(args[0]);
         InvertedIndex invertedIndex = new InvertedIndex();
         invertedIndex.load(compress);
-        invertedIndex.getInvertedIndex(compress, null);
+        invertedIndex.getQueryPostings(compress, null);
         StatisticsCalculator statisticsCalculator = new StatisticsCalculator();
         double averageLengthOfScene = statisticsCalculator.getAverageLengthOfScene(invertedIndex);
         String shortestScene = statisticsCalculator.getShortestScene(invertedIndex);
