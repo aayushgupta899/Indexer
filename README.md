@@ -42,7 +42,13 @@ This project has 6 runnable apps:
     ```
     ./gradlew -P mainClass=api.IndexValidator execute --args='/Users/aayushgupta/Downloads/shakespeare-scenes.json true' 
     ```
-3. `api/QueryRetriever`: This is used to retrieve query results from an index built using `src/api/IndexBuilder`. The input queries are stored in a file, in which each line contains a set of terms separated by whitespace. It prints the time taken to perform the retrieval on the output screen, which can be used to compare the query retrieval times for different indices. This takes the following command line arguments:
+3. `api/QueryRetriever`: This is used to retrieve query results from an index built using `src/api/IndexBuilder`. The input queries are stored in a file, in which each line contains a set of terms separated by whitespace. It prints the time taken to perform the retrieval on the output screen, which can be used to compare the query retrieval times for different indices. It also saves the output from the following retrieval models into a file:
+    * Vector Space Model with `log TF` and `log IDF` weights. Saved in `vs.trecrun`.
+    * BM25 model with `k1 = 1.5`, `k2 = 500` and `b = 0.75`. Saved in `bm25.trecrun`.
+    * Query Likelihood Model with Jelinik-Mercer smoothing and `lambda = 0.2`. Saved in `ql-jm.trecrun`.
+    * Query Likelihood Model with Dirchlet smoothing and `mu = 1200`. Saved in `ql-dir.trecrun`.
+    
+    This takes the following command line arguments:
     * `filename` - This is the absolute/relative path of the file containing the queries. The relative path should be relative to the root of the project.
     * `compress` - Whether the inverted index to query from is compressed or not (true/false).
     * `k` - The number of results to return.

@@ -37,6 +37,7 @@ public class BM25Model implements RetrievalModel {
         for(int doc=1; doc<=index.getDocCount(); doc++)
         {
             Double score = 0.0;
+            boolean scored = false;
             for(Map.Entry<String, PostingList> p : postingLists.entrySet())
             {
                 p.getValue().startIteration();
@@ -54,11 +55,14 @@ public class BM25Model implements RetrievalModel {
                     double second = ((k1 + 1) * fI)/(K + fI);
                     double third = ((k2 + 1) * qfI)/(k2 + qfI);
                     score += Math.log(first) * second * third;
+                    scored = true;
                 }
             }
-            pq.offer(new AbstractMap.SimpleEntry<>(doc, score));
-            if (pq.size() > k) {
-                pq.poll();
+            if(scored) {
+                pq.offer(new AbstractMap.SimpleEntry<>(doc, score));
+                if (pq.size() > k) {
+                    pq.poll();
+                }
             }
         }
         List<Map.Entry<Integer, Double>> result = new ArrayList<>();
