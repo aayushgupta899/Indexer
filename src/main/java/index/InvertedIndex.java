@@ -1,7 +1,11 @@
 package index;
 
+import utilities.Compressor;
 import utilities.IndexReader;
 
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.*;
 
 /**
@@ -57,6 +61,8 @@ public class InvertedIndex implements Index {
     public Map<String, List<String>> getLookupMap() {
         return lookupMap;
     }
+
+    private String termInvListFile;
 
     public InvertedIndex() {
 
@@ -122,17 +128,72 @@ public class InvertedIndex implements Index {
     }
 
     @Override
-    public int getTermFrequency(String term) {
-        if(this.index.containsKey(term)){
-            PostingList postings = this.index.get(term);
-            int termFrequency = 0;
-            for(Posting p : postings.getPostings())
+    public PostingList getPostingList(String word) {
+        boolean isCompressed = termInvListFile.equals(INVERTED_INDEX_FILE_NAME_COMPRESSED);
+        PostingList postings = new PostingList();
+        try (RandomAccessFile invertedListReader = new RandomAccessFile(termInvListFile, "rw")){
+            List<String> lookupEntry = lookupMap.get(word);
+            long offset = Long.parseLong(lookupEntry.get(0));
+            int buffLength = Integer.parseInt(lookupEntry.get(1));
+            byte[] buffer = new byte[buffLength];
+            invertedListReader.seek(offset);
+            invertedListReader.read(buffer, 0, buffLength);
+            if(isCompressed)
             {
-                termFrequency += p.getTermFrequency();
+                Compressor compressor = new Compressor();
+                IntBuffer intBuffer = IntBuffer.allocate(buffer.length);
+                compressor.decompress(buffer, intBuffer);
+                int[] data = new int[intBuffer.position()];
+                intBuffer.rewind();
+                intBuffer.get(data);
+                postings.fromIntegerArray(data);
             }
-            return termFrequency;
+            else
+            {
+                int off = 0;
+                while (off < buffLength) {
+                    Posting posting = new Posting();
+                    int docID = fromByteArray(Arrays.copyOfRange(buffer, off, off + 4));
+                    posting.setDocID(docID);
+                    off += 4;
+                    int termFrequency = fromByteArray(Arrays.copyOfRange(buffer, off, off + 4));
+                    off += 4;
+                    Integer[] pos = new Integer[termFrequency];
+                    for (int i = 0; i < termFrequency; i++) {
+                        pos[i] = fromByteArray(Arrays.copyOfRange(buffer, off, off + 4));
+                        off += 4;
+                    }
+                    posting.setPositions(Arrays.asList(pos));
+                    postings.add(posting);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return 0;
+        return postings;
+    }
+
+    private int fromByteArray(byte[] bytes) {
+        return ByteBuffer.wrap(bytes).getInt();
+    }
+
+    @Override
+    public int getTermFrequency(String term) {
+        int retval = 0;
+        if (lookupMap.containsKey(term)) {
+            retval = Integer.parseInt(lookupMap.get(term).get(3));
+        }
+        return retval;
+//        if(this.index.containsKey(term)){
+//            PostingList postings = this.index.get(term);
+//            int termFrequency = 0;
+//            for(Posting p : postings.getPostings())
+//            {
+//                termFrequency += p.getTermFrequency();
+//            }
+//            return termFrequency;
+//        }
+//        return 0;
     }
 
     @Override
@@ -161,6 +222,7 @@ public class InvertedIndex implements Index {
     public void load(boolean compress) {
         IndexReader indexReader = new IndexReader();
         String lookupFileName = compress ? LOOKUP_FILE_NAME_COMPRESSED : LOOKUP_FILE_NAME_UNCOMPRESSED;
+        termInvListFile = compress ? INVERTED_INDEX_FILE_NAME_COMPRESSED : INVERTED_INDEX_FILE_NAME_UNCOMPRESSED;
         this.lookupMap = indexReader.readLookup(lookupFileName);
         this.sceneIDMap = indexReader.readStringMap(SCENE_ID_MAP_FILE_NAME);
         this.playIDMap = indexReader.readStringMap(PLAY_ID_MAP_FILE_NAME);

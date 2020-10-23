@@ -6,8 +6,9 @@ import index.PostingList;
 
 import java.util.*;
 
-public class QueryLikelihoodJMModel implements RetrievalModel {
+public class QueryLikelihoodJMModel implements QLRetrievalModel {
     private double lambda;
+    private long collectionSize;
 
     public  QueryLikelihoodJMModel(double lambda){
         this.lambda = lambda;
@@ -37,10 +38,8 @@ public class QueryLikelihoodJMModel implements RetrievalModel {
                 }
                 int documentLength = index.getDocLength(doc);
                 int colTermFreq = index.getTermFrequency(queryTerms[i]);
-                long collectionSize = index.getCollectionSize();
-                double first = (1 - lambda) * tf / documentLength;
-                double second = lambda * colTermFreq / collectionSize;
-                score += Math.log(first + second);
+                this.collectionSize = index.getCollectionSize();
+                score += scoreOccurrence(tf, colTermFreq, documentLength);
             }
             if(scored) {
                 pq.offer(new AbstractMap.SimpleEntry<>(doc, score));
@@ -55,5 +54,12 @@ public class QueryLikelihoodJMModel implements RetrievalModel {
         }
         result.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
         return result;
+    }
+
+    @Override
+    public double scoreOccurrence(int termFrequency, int collectionTermFrequency, int documentLength) {
+        double first = (1 - lambda) * termFrequency / documentLength;
+        double second = lambda * collectionTermFrequency / this.collectionSize;
+        return Math.log(first + second);
     }
 }

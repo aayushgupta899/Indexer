@@ -16,4 +16,6 @@ public interface RetrievalModel {
      * @return List of tuples (DocID, Score)
      */
     List<Map.Entry<Integer, Double>> retrieveQuery(InvertedIndex  index, String[] queryTerms, int k, boolean compress);
+
+
 }

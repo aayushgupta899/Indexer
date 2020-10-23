@@ -17,6 +17,12 @@ public class Posting {
         this.positions = new ArrayList<>();
     }
 
+    public Posting(Integer docID, Integer position) {
+        this.positions = new ArrayList<>();
+        this.positions.add(position);
+        this.docID = docID;
+    }
+
     public int getDocID() {
         return docID;
     }

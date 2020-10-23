@@ -95,6 +95,28 @@ This project has 6 runnable apps:
     ```
     ./gradlew -P mainClass=api.StatisticsCalculator execute --args='true' 
     ```
+7.  `inferencenetwork/TestInferenceNetwork`: This is used to run the inference network with the following operators:
+     * Ordered Window, with the window size of 1 (exact phrase)
+     * Unordered Window, with window size 3 * size of the query
+     * SUM
+     * AND
+     * OR
+     * MAX
+     
+     All of the operators are scored with Query Likelihood model, with Dirchlet smoothing, with the value of mu = 1500.
+     It takes the following parameters:
+     * `k`: The number of results to return
+     * `compressed`: Whether to use the compressed index or not
+     * `queryFile`: The name of the file containing the query
+     
+     To run the app, the following command is required:
+     ```
+     ./gradlew -P mainClass=inferencenetwork.TestInferenceNetwork execute --args='<k> <compressed> <queryFile>' 
+     ```
+     An example would be:
+     ```
+     ./gradlew -P mainClass=inferencenetwork.TestInferenceNetwork execute --args='10 true queries.txt' 
+     ```
 ## Troubleshooting
 1. The gradle commands require JAVA_HOME environment variable to be correctly set in the system.
 2. If the above mentioned commands fail to build the code, please use IntelliJ to import the project. It will import the project correctly, and install the dependencies. After that, the gradle commands can be used, or the files can be run using IntelliJ.

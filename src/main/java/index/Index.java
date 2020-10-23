@@ -88,5 +88,7 @@ public interface Index {
      */
     List<Map.Entry<Integer, Double>> retrieveQuery(String[] queryTerms, int k, boolean compress);
 
+    PostingList getPostingList(String word);
+
 
 }

@@ -208,7 +208,8 @@ public class QueryRetriever {
      */
     public void retrieveQueryQLDir(InvertedIndex invertedIndex, String queryFileName, boolean compress, int k) {
         List<Map.Entry<Integer, Double>> results;
-        QueryLikelihoodDirModel queryLikelihoodDirModel = new QueryLikelihoodDirModel(1200);
+        long collectionSize = invertedIndex.getCollectionSize();
+        QueryLikelihoodDirModel queryLikelihoodDirModel = new QueryLikelihoodDirModel(1200, collectionSize);
         String runID = "guaayush-ql-dir-1200";
         String outputFile = "ql-dir.trecrun";
         int queryNum = 1;

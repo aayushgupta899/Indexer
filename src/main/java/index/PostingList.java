@@ -14,7 +14,7 @@ public class PostingList {
     public PostingList()
     {
         this.postings = new ArrayList<>();
-        this.postingsIndex = -1;
+        this.postingsIndex = 0;
     }
 
     /**

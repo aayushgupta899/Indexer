@@ -6,12 +6,14 @@ import index.PostingList;
 
 import java.util.*;
 
-public class QueryLikelihoodDirModel implements RetrievalModel{
+public class QueryLikelihoodDirModel implements QLRetrievalModel{
 
     private double mu;
+    private long collectionSize;
 
-    public QueryLikelihoodDirModel(double mu){
+    public QueryLikelihoodDirModel(double mu, long collectionSize){
         this.mu = mu;
+        this.collectionSize = collectionSize;
     }
     @Override
     public List<Map.Entry<Integer, Double>> retrieveQuery(InvertedIndex index, String[] queryTerms, int k, boolean compress) {
@@ -38,8 +40,8 @@ public class QueryLikelihoodDirModel implements RetrievalModel{
                 }
                 int documentLength = index.getDocLength(doc);
                 int colTermFreq = index.getTermFrequency(queryTerms[i]);
-                long collectionSize = index.getCollectionSize();
-                score += Math.log((tf + mu * colTermFreq / collectionSize)/(mu + documentLength));
+                this.collectionSize = index.getCollectionSize();
+                score += scoreOccurrence(tf, colTermFreq, documentLength);
             }
             if(scored) {
                 pq.offer(new AbstractMap.SimpleEntry<>(doc, score));
@@ -54,5 +56,10 @@ public class QueryLikelihoodDirModel implements RetrievalModel{
         }
         result.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
         return result;
+    }
+
+    @Override
+    public double scoreOccurrence(int termFrequency, int collectionTermFrequency, int documentLength) {
+        return Math.log((termFrequency + mu * collectionTermFrequency / this.collectionSize)/(mu + documentLength));
     }
 }
