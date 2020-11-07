@@ -26,10 +26,8 @@ public class TestInferenceNetwork {
      * @param args k compressed queryFile
      */
     public static void main(String[] args) {
-//        int k = Integer.parseInt(args[0]);
-        int k = 10;
-//        boolean compressed = Boolean.parseBoolean(args[1]);
-        boolean compressed = true;
+        int k = Integer.parseInt(args[0]);
+        boolean compressed = Boolean.parseBoolean(args[1]);
         Index invertedIndex = new InvertedIndex();
         invertedIndex.load(compressed);
         long collectionSize = invertedIndex.getCollectionSize();
@@ -40,8 +38,7 @@ public class TestInferenceNetwork {
         QueryNode queryNode;
         ArrayList<ProximityNode> children;
 
-//        String queryFile = args[2];
-        String queryFile = "queries.txt";
+        String queryFile = args[2];
         List<String> queries = new ArrayList<String>();
         try {
             String query;

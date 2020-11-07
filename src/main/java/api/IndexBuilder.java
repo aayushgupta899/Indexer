@@ -7,6 +7,8 @@ import org.json.simple.JSONObject;
 import utilities.IndexWriter;
 import utilities.JSONFileReader;
 
+import java.util.HashMap;
+
 /**
  * Contains methods to build and inverted index and write it to disk
  */
@@ -21,7 +23,8 @@ public class IndexBuilder {
     enum MAP_NAME  {
         SCENE_ID,
         PLAY_ID,
-        DOC_LENGTH
+        DOC_LENGTH,
+        DOC_TO_TERM
     }
 
     private static final String INVERTED_INDEX_FILE_NAME_COMPRESSED = "InvertedListCompressed";
@@ -31,6 +34,7 @@ public class IndexBuilder {
     private static final String SCENE_ID_MAP_FILE_NAME = "SceneIDMap.txt";
     private static final String PLAY_ID_MAP_FILE_NAME = "PlayIDMap.txt";
     private static final String DOC_LENGTH_MAP_FILE_NAME = "DocLengthMap.txt";
+    private static final String DOC_TO_TERM_MAP_FILE_NAME = "DocTermMap.json";
 
     /**
      * @param args filename compress
@@ -55,11 +59,13 @@ public class IndexBuilder {
         System.out.println("Scene ID Map  filename: "+SCENE_ID_MAP_FILE_NAME);
         System.out.println("Play ID Map filename: "+PLAY_ID_MAP_FILE_NAME);
         System.out.println("Doc Length Map filename: "+DOC_LENGTH_MAP_FILE_NAME);
+        System.out.println("Doc Term Map filename: "+DOC_TO_TERM_MAP_FILE_NAME);
         System.out.println("Writing the files to disk......");
         indexBuilder.writeIndexToFile(lookupFileName, invertedIndexFileName, toCompress);
         indexBuilder.writeMapToFile(SCENE_ID_MAP_FILE_NAME, MAP_NAME.SCENE_ID);
         indexBuilder.writeMapToFile(PLAY_ID_MAP_FILE_NAME, MAP_NAME.PLAY_ID);
         indexBuilder.writeMapToFile(DOC_LENGTH_MAP_FILE_NAME, MAP_NAME.DOC_LENGTH);
+        indexBuilder.writeMapToFile(DOC_TO_TERM_MAP_FILE_NAME, MAP_NAME.DOC_TO_TERM);
         System.out.println("Files written successfully");
         System.out.println("*******************************");
     }
@@ -85,6 +91,9 @@ public class IndexBuilder {
                 IndexWriter<Integer> docLengthMapWriter = new IndexWriter<>();
                 docLengthMapWriter.writeMap(fileName, this.invertedIndex.getDocLengthMap());
                 break;
+            case DOC_TO_TERM:
+                IndexWriter<String> docTermMapWriter = new IndexWriter<>();
+                docTermMapWriter.writeDocIndex(fileName, this.invertedIndex.getDocToTermMap());
         }
     }
 
@@ -126,6 +135,13 @@ public class IndexBuilder {
                 this.invertedIndex.getIndex().putIfAbsent(word, new PostingList());
                 this.invertedIndex.getIndex().get(word).add(docID, pos+1);
             }
+            // Create a map from docID -> term, term freq
+            HashMap<String, Integer> termFreqMap = new HashMap<>();
+            for(String word : words){
+                termFreqMap.putIfAbsent(word, 0);
+                termFreqMap.put(word, termFreqMap.get(word)+1);
+            }
+            this.invertedIndex.getDocToTermMap().put(docID, termFreqMap);
         }
     }
 }

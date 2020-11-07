@@ -38,6 +38,12 @@ public class InvertedIndex implements Index {
      */
     private Map<Integer, Integer> docLengthMap;
 
+    /**
+     *  This stores the mapping between the doc ID and the
+     *  terms, along with their term counts
+     */
+    private Map<Integer, Map<String, Integer>> docToTermMap;
+
     private static final String INVERTED_INDEX_FILE_NAME_COMPRESSED = "InvertedListCompressed";
     private static final String INVERTED_INDEX_FILE_NAME_UNCOMPRESSED = "InvertedList";
     private static final String LOOKUP_FILE_NAME_COMPRESSED =  "InvertedIndexLookupCompressed.txt";
@@ -45,6 +51,7 @@ public class InvertedIndex implements Index {
     private static final String SCENE_ID_MAP_FILE_NAME = "SceneIDMap.txt";
     private static final String PLAY_ID_MAP_FILE_NAME = "PlayIDMap.txt";
     private static final String DOC_LENGTH_MAP_FILE_NAME = "DocLengthMap.txt";
+    private static final String DOC_TO_TERM_MAP_FILE_NAME = "DocTermMap.json";
 
     public Map<Integer, String> getSceneIDMap() {
         return sceneIDMap;
@@ -64,6 +71,14 @@ public class InvertedIndex implements Index {
 
     private String termInvListFile;
 
+    public Map<Integer, Map<String, Integer>> getDocToTermMap() {
+        return docToTermMap;
+    }
+
+    public void setDocToTermMap(Map<Integer, Map<String, Integer>> docToTermMap) {
+        this.docToTermMap = docToTermMap;
+    }
+
     public InvertedIndex() {
 
         this.index = new HashMap<>();
@@ -71,6 +86,7 @@ public class InvertedIndex implements Index {
         this.playIDMap = new HashMap<>();
         this.docLengthMap = new HashMap<>();
         this.lookupMap = new HashMap<>();
+        this.docToTermMap = new HashMap<>();
     }
 
     @Override
@@ -99,9 +115,12 @@ public class InvertedIndex implements Index {
 
     @Override
     public int getDocFrequency(String term) {
-        if(this.index.containsKey(term))
-        {
-            return this.index.get(term).getDocumentCount();
+//        if(this.index.containsKey(term))
+//        {
+//            return this.index.get(term).getDocumentCount();
+//        }
+        if(this.lookupMap.containsKey(term)){
+            return Integer.parseInt(this.lookupMap.get(term).get(2));
         }
         return -1;
     }
@@ -115,6 +134,10 @@ public class InvertedIndex implements Index {
     public String getDocName(int docID) {
 
         return this.sceneIDMap.containsKey(docID) ? sceneIDMap.get(docID) : null;
+    }
+
+    public Map<String, Integer> getDocumentVector(int docID){
+        return this.getDocToTermMap().get(docID);
     }
 
     @Override
@@ -227,6 +250,7 @@ public class InvertedIndex implements Index {
         this.sceneIDMap = indexReader.readStringMap(SCENE_ID_MAP_FILE_NAME);
         this.playIDMap = indexReader.readStringMap(PLAY_ID_MAP_FILE_NAME);
         this.docLengthMap = indexReader.readIntegerMap(DOC_LENGTH_MAP_FILE_NAME);
+        this.docToTermMap = indexReader.readDocTermMap(DOC_TO_TERM_MAP_FILE_NAME);
     }
 
     @Override

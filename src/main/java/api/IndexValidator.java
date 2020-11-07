@@ -3,6 +3,7 @@ package api;
 import index.InvertedIndex;
 import index.PostingList;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -48,6 +49,14 @@ public class IndexValidator {
         {
             System.out.println("Indices don't match!");
         }
+        Map<Integer, Map<String, Integer>> sourceDocTermMap = sourceInvertedIndex.getDocToTermMap();
+        Map<Integer, Map<String, Integer>> fileDocTermMap = invertedIndexFromFile.getDocToTermMap();
+        if(this.checkIfDocTermMapAreIdentical(sourceDocTermMap, fileDocTermMap)){
+            System.out.println("Doc Term Maps are the same!");
+        }
+        else{
+            System.out.println("Doc Term Maps don't match!");
+        }
     }
 
     /**
@@ -88,6 +97,39 @@ public class IndexValidator {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        return true;
+    }
+
+    /**
+     *
+     */
+    public boolean checkIfDocTermMapAreIdentical(Map<Integer, Map<String, Integer>> map1, Map<Integer, Map<String, Integer>> map2){
+        if(map1 == null || map2 == null){
+            System.out.println("Null");
+            return false;
+        }
+        if(map1.size() != map2.size()){
+            System.out.println("Map sizes unequal");
+            return false;
+        }
+        for(Map.Entry<Integer, Map<String, Integer>> entry : map1.entrySet()){
+            Integer docID1 = entry.getKey();
+            Map<String, Integer> termMap1 = entry.getValue();
+            Map<String, Integer> termMap2 = map2.get(docID1);
+            if(termMap1.size() != termMap2.size()){
+                System.out.println("Size mismatch for docID "+ docID1);
+                return false;
+            }
+            for(Map.Entry<String, Integer> termEntry : termMap1.entrySet()){
+                String term = termEntry.getKey();
+                int termCount1 = termEntry.getValue();
+                int termCount2 = termMap2.get(term);
+                if(termCount1 != termCount2){
+                    System.out.println("Count mismatch for term: "+term+" , docID: "+docID1);
+                    return false;
+                }
+            }
         }
         return true;
     }

@@ -3,3 +3,6 @@
 build
 *.txt
 *.trecrun
+*.out
+*.json
+.DS_Store

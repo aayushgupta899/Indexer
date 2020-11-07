@@ -7,7 +7,6 @@ import retrieval.QLRetrievalModel;
 
 public abstract class ProximityNode implements QueryNode {
     protected int ctf = 0;
-    protected int curDocItr = 0;
     protected PostingList postingList = null;
     protected Index index;
     protected QLRetrievalModel model;

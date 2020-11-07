@@ -117,6 +117,21 @@ This project has 6 runnable apps:
      ```
      ./gradlew -P mainClass=inferencenetwork.TestInferenceNetwork execute --args='10 true queries.txt' 
      ```
+8.  `api/OnlineCluster`: This is used to create the document clusters, given the index compression and the linkage. It creates files for thresholds ranging from 0.05 to 0.95.
+    The following are the supported linkages:
+    * SINGLE_LINK
+    * COMPLETE_LINK
+    * AVERAGE_LINK
+    * MEAN_LINK
+    
+    To run the app, the following command is required:
+     ```
+     ./gradlew -P mainClass=api.OnlineCluster execute --args='<k> <compressed> <linkage>' 
+     ```
+     An example would be:
+     ```
+     ./gradlew -P mainClass=api.OnlineCluster execute --args='true MEAN_LINK' 
+     ```
 ## Troubleshooting
 1. The gradle commands require JAVA_HOME environment variable to be correctly set in the system.
 2. If the above mentioned commands fail to build the code, please use IntelliJ to import the project. It will import the project correctly, and install the dependencies. After that, the gradle commands can be used, or the files can be run using IntelliJ.

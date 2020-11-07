@@ -2,7 +2,10 @@ package utilities;
 
 import index.InvertedIndex;
 import index.PostingList;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
@@ -61,6 +64,34 @@ public class IndexWriter<T> {
         }
     }
 
+    /**
+     * Write document to term, term count map to disk
+     * @param map
+     */
+    public void writeDocIndex(String filename, Map<Integer, Map<String, Integer>> map){
+        JSONArray docArray = new JSONArray();
+        for(Map.Entry<Integer, Map<String, Integer>> entry : map.entrySet()){
+            JSONObject docObject = new JSONObject();
+            JSONArray termArray = new JSONArray();
+            for(Map.Entry<String, Integer> terms : entry.getValue().entrySet()){
+                JSONObject termJSON = new JSONObject();
+                termJSON.put("term", terms.getKey());
+                termJSON.put("count", terms.getValue());
+                termArray.add(termJSON);
+            }
+            docObject.put("docID", entry.getKey());
+            docObject.put("termArray", termArray);
+            docArray.add(docObject);
+        }
+        try (FileWriter file = new FileWriter(filename)) {
+
+            file.write(docArray.toJSONString());
+            file.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     /**
      * Writes a map to disk
      * @param filename The name of the file

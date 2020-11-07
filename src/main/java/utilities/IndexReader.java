@@ -2,6 +2,10 @@ package utilities;
 
 import index.Posting;
 import index.PostingList;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -157,6 +161,40 @@ public class IndexReader {
                 currentLine = lookupReader.readLine();
             }
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public Map<Integer, Map<String, Integer>> readDocTermMap(String filename){
+        //JSON parser object to parse read file
+        JSONParser jsonParser = new JSONParser();
+        HashMap<Integer, Map<String, Integer>> result = new HashMap<>();
+        try (FileReader reader = new FileReader(filename))
+        {
+            //Read JSON file
+            Object obj = jsonParser.parse(reader);
+
+            JSONArray docList = (JSONArray) obj;
+
+            for(int i=0; i<docList.size(); i++){
+                JSONObject docEntry = (JSONObject) docList.get(i);
+                HashMap<String, Integer> termMap = new HashMap<>();
+                int docID = (int)(long)(docEntry.get("docID"));
+                JSONArray termList = (JSONArray) docEntry.get("termArray");
+                for(int j=0; j<termList.size(); j++){
+                    JSONObject termEntry = (JSONObject) termList.get(j);
+                    String term = (String) termEntry.get("term");
+                    int count = (int)(long)(termEntry.get("count"));
+                    termMap.put(term, count);
+                }
+                result.put(docID, termMap);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
             e.printStackTrace();
         }
         return result;
