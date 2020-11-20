@@ -6,3 +6,7 @@ build
 *.out
 *.json
 .DS_Store
+*.csv
+*.prior
+InvertedList
+InvertedListCompressed
