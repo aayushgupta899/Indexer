@@ -132,6 +132,26 @@ This project has 6 runnable apps:
      ```
      ./gradlew -P mainClass=api.OnlineCluster execute --args='true MEAN_LINK' 
      ```
+9.  `api/GeneratePriors`: This is used to create the priors using `uniform` and `random`, and writes them to a file on disk.
+
+     To run the app, the following command is required:
+      ```
+      ./gradlew -P mainClass=api.GeneratePriors execute --args='<compressed>' 
+      ```
+      An example would be:
+      ```
+      ./gradlew -P mainClass=api.GeneratePriors execute --args='true' 
+      ```
+10.   `api/RunPriorQueries`: This is used to run the prior queries using the arguments provided.
+
+       To run the app, the following command is required:
+      ```
+      ./gradlew -P mainClass=api.RunPriorQueries execute --args='<priorFileName> <compressed> <k>' 
+      ```
+      An example would be:
+      ```
+      ./gradlew -P mainClass=api.RunPriorQueries execute --args='uniform.prior true 10' 
+      ```
 ## Troubleshooting
 1. The gradle commands require JAVA_HOME environment variable to be correctly set in the system.
 2. If the above mentioned commands fail to build the code, please use IntelliJ to import the project. It will import the project correctly, and install the dependencies. After that, the gradle commands can be used, or the files can be run using IntelliJ.
