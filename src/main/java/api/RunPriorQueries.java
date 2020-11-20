@@ -53,7 +53,7 @@ public class RunPriorQueries {
                     children.add(node);
                 }
 
-                children.add(new PriorNode(priorFileName));
+                children.add(new PriorNode(priorFileName, index));
 
                 QueryNode queryNode = new AndNode(children);
                 List<Map.Entry<Integer, Double>> results = inferenceNetwork.runQuery(queryNode, k);

@@ -3,6 +3,7 @@ package index;
 import utilities.Compressor;
 import utilities.IndexReader;
 
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -302,6 +303,18 @@ public class InvertedIndex implements Index {
 
     public void setIndex(Map<String, PostingList> index) {
         this.index = index;
+    }
+
+    public Double retrievePrior(String fileName, int docID){
+        Double result = null;
+        try(RandomAccessFile reader = new RandomAccessFile(fileName, "rw")){
+            reader.seek((docID-1)*8);
+            result = reader.readDouble();
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+        return result;
     }
 
 }
